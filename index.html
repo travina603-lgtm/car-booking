@@ -1,0 +1,756 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveX - Premium Car Booking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ============================
+           CSS STYLES
+           ============================ */
+        
+        /* --- Global Variables & Reset --- */
+        :root {
+            --primary-color: #ff4d30;
+            --secondary-color: #2d3436;
+            --text-color: #636e72;
+            --bg-light: #f8f9fa;
+            --white: #ffffff;
+            --shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+        body { color: var(--secondary-color); line-height: 1.6; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 12px 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+            box-shadow: 0 8px 15px rgba(255, 77, 48, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: #e03e23;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(255, 77, 48, 0.3);
+        }
+
+        .btn-transparent {
+            background: transparent;
+            color: var(--secondary-color); /* Default for sticky header */
+            border: 2px solid transparent;
+        }
+        
+        /* Header specific button adjustment handled in header section */
+
+        .btn-block { width: 100%; }
+        .btn-sm { padding: 6px 15px; font-size: 0.9rem; }
+        .btn-outline { border: 2px solid var(--secondary-color); background: transparent; }
+
+        /* --- Header & Navigation --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: var(--transition);
+            padding: 15px 0;
+            background: transparent;
+        }
+
+        header.scrolled {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            padding: 10px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white); /* White initially */
+            z-index: 1001;
+            transition: var(--transition);
+        }
+
+        header.scrolled .logo { color: var(--secondary-color); }
+
+        .logo span { color: var(--primary-color); }
+
+        /* Desktop Nav */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links { display: flex; gap: 30px; }
+
+        .nav-links a {
+            font-weight: 600;
+            color: var(--white);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        header.scrolled .nav-links a { color: var(--secondary-color); }
+
+        .nav-links a:hover, .nav-links a.active { color: var(--primary-color); }
+
+        /* Auth Buttons in Nav */
+        .auth-buttons button { margin-left: 10px; }
+        .auth-buttons .btn-transparent { color: var(--white); }
+        header.scrolled .auth-buttons .btn-transparent { color: var(--secondary-color); }
+        header.scrolled .auth-buttons .btn-transparent:hover { color: var(--primary-color); }
+
+        /* Mobile Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--white);
+            margin: 2px 0;
+            transition: 0.4s;
+            border-radius: 2px;
+        }
+
+        header.scrolled .hamburger span { background-color: var(--secondary-color); }
+
+        /* --- Mobile Responsive Nav Styles --- */
+        @media screen and (max-width: 960px) {
+            .hamburger { display: flex; }
+
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%; /* Hidden by default */
+                width: 70%;
+                height: 100vh;
+                background-color: var(--white);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: 0.5s ease;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active { right: 0; }
+
+            .nav-links {
+                flex-direction: column;
+                text-align: center;
+                gap: 40px;
+                margin-bottom: 40px;
+            }
+
+            .nav-links a, header.scrolled .nav-links a {
+                color: var(--secondary-color);
+                font-size: 1.5rem;
+            }
+
+            .auth-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                width: 80%;
+            }
+
+            .auth-buttons .btn-transparent { color: var(--secondary-color); border: 1px solid #ddd; }
+            
+            /* Hamburger Animation to X */
+            .hamburger.toggle span:nth-child(1) { transform: rotate(-45deg) translate(-5px, 5px); background-color: var(--secondary-color); }
+            .hamburger.toggle span:nth-child(2) { opacity: 0; }
+            .hamburger.toggle span:nth-child(3) { transform: rotate(45deg) translate(-5px, -5px); background-color: var(--secondary-color); }
+            
+            .logo { color: var(--white); } /* Keep logo white or adjust based on background */
+            header.scrolled .logo { color: var(--secondary-color); }
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+            margin-top: 0;
+        }
+
+        .hero-content {
+            color: var(--white);
+            max-width: 800px;
+            animation: fadeIn Up 1s ease;
+        }
+
+        .hero h1 { font-size: 3.5rem; line-height: 1.2; margin-bottom: 20px; }
+        .hero .highlight { color: var(--primary-color); }
+        .hero p { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9; }
+
+        /* Search Box */
+        .search-box {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            align-items: flex-end;
+            text-align: left;
+        }
+
+        .input-group { flex: 1; display: flex; flex-direction: column; }
+        .input-group label { font-weight: 700; font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 8px; }
+        .input-group input { padding: 12px; border: 1px solid #ddd; border-radius: 6px; outline: none; width: 100%; }
+        .input-group input:focus { border-color: var(--primary-color); }
+
+        @media screen and (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .search-box { flex-direction: column; width: 100%; }
+            .input-group { width: 100%; }
+            .search-btn { width: 100%; margin-top: 10px; }
+        }
+
+        /* --- Car Fleet Section --- */
+        .section { padding: 80px 0; }
+        .bg-light { background-color: var(--bg-light); }
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .section-header h2 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; }
+        .section-header p { color: var(--text-color); }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .car-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .car-card:hover { transform: translateY(-10px); box-shadow: var(--shadow); }
+
+        .car-image-container { overflow: hidden; height: 220px; }
+        .car-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .car-card:hover .car-image { transform: scale(1.1); }
+
+        .car-details { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .car-title { font-size: 1.4rem; margin-bottom: 5px; font-weight: 700; }
+        .car-category { color: var(--text-color); font-size: 0.9rem; margin-bottom: 15px; }
+        
+        .car-specs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .spec-item { display: flex; align-items: center; gap: 5px; color: var(--text-color); font-size: 0.9rem; }
+        .spec-item i { color: var(--primary-color); }
+
+        .car-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .price { font-size: 1.25rem; font-weight: 800; color: var(--secondary-color); }
+        .price span { font-size: 0.9rem; color: var(--text-color); font-weight: 400; }
+
+        /* --- Footer --- */
+        footer { background: #1a1a1a; color: #fff; padding: 70px 0 20px; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .footer-col h3 { font-size: 1.5rem; margin-bottom: 20px; color: var(--white); }
+        .footer-col p { color: #bbb; line-height: 1.8; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { color: #bbb; transition: 0.3s; }
+        .footer-col ul li a:hover { color: var(--primary-color); padding-left: 5px; }
+        .social-links { display: flex; gap: 15px; margin-top: 20px; }
+        .social-links a { width: 40px; height: 40px; background: #333; display: flex; justify-content: center; align-items: center; border-radius: 50%; transition: 0.3s; }
+        .social-links a:hover { background: var(--primary-color); }
+        .footer-bottom { border-top: 1px solid #333; padding-top: 25px; text-align: center; color: #666; font-size: 0.9rem; }
+
+        /* --- Modals (Login/Signup) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--white); padding: 40px; border-radius: 12px;
+            width: 400px; max-width: 90%;
+            position: relative; transform: translateY(-50px); transition: 0.3s;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #999; }
+        .close-modal:hover { color: var(--primary-color); }
+        .modal-content h2 { margin-bottom: 20px; text-align: center; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; outline: none; }
+        .form-group input:focus { border-color: var(--primary-color); }
+
+        /* Utilities */
+        .hidden { display: none !important; }
+        .user-profile { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        #user-name { color: var(--white); }
+        header.scrolled #user-name { color: var(--secondary-color); }
+        @media screen and (max-width: 960px) {
+            #user-name { color: var(--secondary-color); } /* In mobile menu */
+        }
+    </style>
+</head>
+<body>
+
+    <header id="header">
+        <div class="container nav-container">
+            <a href="#" class="logo">Drive<span>X</span></a>
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <nav class="nav-menu" id="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="#home" class="active" onclick="closeMenu()">Home</a></li>
+                    <li><a href="#fleet" onclick="closeMenu()">Our Fleet</a></li>
+                    <li><a href="#services" onclick="closeMenu()">Services</a></li>
+                    <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
+                </ul>
+                
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="btn btn-transparent" id="login-btn" onclick="closeMenu()">Log In</button>
+                    <button class="btn btn-primary" id="signup-btn" onclick="closeMenu()">Sign Up</button>
+                </div>
+
+                <div class="user-profile hidden" id="user-profile">
+                    <span id="user-name">User</span>
+                    <button class="btn btn-sm btn-outline" id="logout-btn" onclick="closeMenu()">Logout</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>The Easy Way To Take <br> <span class="highlight">Control</span> Of Your Ride</h1>
+            <p>Rent high-end vehicles for your next trip. Unbeatable prices, unlimited miles, and flexible pick-up options.</p>
+            
+            <div class="search-box">
+                <div class="input-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                    <input type="text" placeholder="City or Airport">
+                </div>
+                <div class="input-group">
+                    <label><i class="far fa-calendar-alt"></i> Pick-up</label>
+                    <input type="date">
+                </div>
+                <div class="input-group">
+                    <label><i class="far fa-calendar-alt"></i> Return</label>
+                    <input type="date">
+                </div>
+                <button class="btn btn-primary search-btn">Search</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="fleet" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Premium Fleet</h2>
+                <p>Top rated vehicles for every occasion.</p>
+            </div>
+            
+            <div class="car-grid" id="car-grid">
+                </div>
+        </div>
+    </section>
+
+    <section id="services" class="section bg-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose DriveX?</h2>
+            </div>
+            <div class="car-grid" style="text-align: center;">
+                <div class="car-card" style="padding: 30px; align-items: center; border:none; box-shadow:none; background: transparent;">
+                    <i class="fas fa-trophy" style="font-size: 3rem; color: var(--primary-color); margin-bottom:20px;"></i>
+                    <h3 style="margin-bottom: 10px;">First Class Service</h3>
+                    <p style="color: #666;">We prioritize your comfort and safety above all else.</p>
+                </div>
+                <div class="car-card" style="padding: 30px; align-items: center; border:none; box-shadow:none; background: transparent;">
+                    <i class="fas fa-road" style="font-size: 3rem; color: var(--primary-color); margin-bottom:20px;"></i>
+                    <h3 style="margin-bottom: 10px;">24/7 Road Support</h3>
+                    <p style="color: #666;">Help is just a phone call away, anywhere, anytime.</p>
+                </div>
+                <div class="car-card" style="padding: 30px; align-items: center; border:none; box-shadow:none; background: transparent;">
+                    <i class="fas fa-tags" style="font-size: 3rem; color: var(--primary-color); margin-bottom:20px;"></i>
+                    <h3 style="margin-bottom: 10px;">Quality at Minimum</h3>
+                    <p style="color: #666;">Best price guarantee for all our premium vehicles.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h3>Drive<span>X</span></h3>
+                <p>We provide the best cars for you to enjoy your trip safely and comfortably.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#fleet">Our Fleet</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Street, New York, USA</li>
+                    <li><i class="fas fa-phone"></i> +1 234 567 8900</li>
+                    <li><i class="fas fa-envelope"></i> info@drivex.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2024 DriveX. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Welcome Back</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="login-email" required placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required placeholder="******">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Log In</button>
+                <p class="modal-footer-text" style="margin-top:15px; text-align:center;">Don't have an account? <a href="#" id="switch-to-signup" style="color:var(--primary-color); font-weight:600;">Sign Up</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="signup-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Create Account</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signup-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="signup-email" required placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signup-password" required placeholder="Create a password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                <p class="modal-footer-text" style="margin-top:15px; text-align:center;">Already have an account? <a href="#" id="switch-to-login" style="color:var(--primary-color); font-weight:600;">Log In</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* ============================
+           JAVASCRIPT LOGIC
+           ============================ */
+
+        // Data: Real Unsplash Images
+        const carsData = [
+            {
+                id: 1,
+                name: "Tesla Model S",
+                price: 150,
+                type: "Electric",
+                transmission: "Auto",
+                fuel: "EV",
+                image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 2,
+                name: "BMW M4 Comp",
+                price: 180,
+                type: "Sports",
+                transmission: "Auto",
+                fuel: "Petrol",
+                image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 3,
+                name: "Mercedes G-Wagon",
+                price: 250,
+                type: "SUV",
+                transmission: "Auto",
+                fuel: "Diesel",
+                image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 4,
+                name: "Audi R8 Spyder",
+                price: 300,
+                type: "Supercar",
+                transmission: "Auto",
+                fuel: "Petrol",
+                image: "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 5,
+                name: "Ford Mustang GT",
+                price: 110,
+                type: "Muscle",
+                transmission: "Manual",
+                fuel: "Petrol",
+                image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                id: 6,
+                name: "Range Rover Sport",
+                price: 140,
+                type: "SUV",
+                transmission: "Auto",
+                fuel: "Diesel",
+                image: "https://images.unsplash.com/photo-1563720223185-11003d516935?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+            }
+        ];
+
+        /* --- Elements --- */
+        const header = document.querySelector('header');
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('nav-menu');
+        const carGrid = document.getElementById('car-grid');
+        
+        /* --- Mobile Navigation --- */
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('toggle');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        function closeMenu() {
+            hamburger.classList.remove('toggle');
+            navMenu.classList.remove('active');
+        }
+
+        /* --- Scroll Animation --- */
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        /* --- Render Cars --- */
+        function renderCars() {
+            carGrid.innerHTML = carsData.map(car => `
+                <div class="car-card">
+                    <div class="car-image-container">
+                        <img src="${car.image}" alt="${car.name}" class="car-image">
+                    </div>
+                    <div class="car-details">
+                        <span class="car-category">${car.type}</span>
+                        <h3 class="car-title">${car.name}</h3>
+                        
+                        <div class="car-specs">
+                            <span class="spec-item"><i class="fas fa-cogs"></i> ${car.transmission}</span>
+                            <span class="spec-item"><i class="fas fa-gas-pump"></i> ${car.fuel}</span>
+                            <span class="spec-item"><i class="fas fa-chair"></i> 4 Seats</span>
+                        </div>
+
+                        <div class="car-footer">
+                            <div class="price">$${car.price} <span>/ Day</span></div>
+                            <button class="btn btn-primary btn-sm" onclick="bookCar(${car.id})">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* --- Booking Logic --- */
+        function bookCar(id) {
+            const user = JSON.parse(localStorage.getItem('drivex_current_user'));
+            if (!user) {
+                alert("Please login to book a car!");
+                openModal('login');
+            } else {
+                const car = carsData.find(c => c.id === id);
+                alert(`Booking Successful!\nVehicle: ${car.name}\nTotal: $${car.price}\n\nWe will contact you shortly, ${user.name}!`);
+            }
+        }
+
+        /* --- Auth Modal Logic --- */
+        const loginModal = document.getElementById('login-modal');
+        const signupModal = document.getElementById('signup-modal');
+        const closeModals = document.querySelectorAll('.close-modal');
+        
+        function openModal(type) {
+            closeMenu(); // Ensure mobile menu is closed first
+            if (type === 'login') {
+                loginModal.classList.add('active');
+                signupModal.classList.remove('active');
+            } else {
+                signupModal.classList.add('active');
+                loginModal.classList.remove('active');
+            }
+        }
+
+        function closeModal() {
+            loginModal.classList.remove('active');
+            signupModal.classList.remove('active');
+        }
+
+        // Event Listeners
+        document.getElementById('login-btn').addEventListener('click', () => openModal('login'));
+        document.getElementById('signup-btn').addEventListener('click', () => openModal('signup'));
+        
+        closeModals.forEach(btn => btn.addEventListener('click', closeModal));
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal || e.target === signupModal) closeModal();
+        });
+
+        document.getElementById('switch-to-signup').addEventListener('click', (e) => { e.preventDefault(); openModal('signup'); });
+        document.getElementById('switch-to-login').addEventListener('click', (e) => { e.preventDefault(); openModal('login'); });
+
+        /* --- Auth System (LocalStorage) --- */
+        const DB_KEY = 'drivex_users';
+        const SESSION_KEY = 'drivex_current_user';
+
+        document.getElementById('signup-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const users = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+
+            if (users.find(u => u.email === email)) {
+                alert("User already exists!");
+                return;
+            }
+
+            users.push({ name, email, password });
+            localStorage.setItem(DB_KEY, JSON.stringify(users));
+            alert("Account created! Please log in.");
+            openModal('login');
+            e.target.reset();
+        });
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const users = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+                checkSession();
+                closeModal();
+                alert(`Welcome back, ${user.name}!`);
+                e.target.reset();
+            } else {
+                alert("Invalid credentials!");
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem(SESSION_KEY);
+            checkSession();
+            alert("Logged out.");
+        });
+
+        function checkSession() {
+            const user = JSON.parse(localStorage.getItem(SESSION_KEY));
+            const authBtns = document.getElementById('auth-buttons');
+            const userProfile = document.getElementById('user-profile');
+            const userName = document.getElementById('user-name');
+
+            if (user) {
+                authBtns.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                userName.textContent = `Hi, ${user.name.split(' ')[0]}`;
+            } else {
+                authBtns.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+            }
+        }
+
+        // Initialize
+        renderCars();
+        checkSession();
+
+    </script>
+</body>
+</html>
